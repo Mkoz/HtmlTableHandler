@@ -20,4 +20,8 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 endif()
 
 add_subdirectory(CTML)
-add_library(HtmlTableHandler SHARED HtmlTableHandler.cpp HtmlTableHandler.h impl/HtmlTableHandlerImpl.cpp impl/HtmlTableHandlerImpl.h)
+#add_library(HtmlTableHandler SHARED HtmlTableHandler.cpp HtmlTableHandler.h impl/HtmlTableHandlerImpl.cpp impl/HtmlTableHandlerImpl.h)
+
+
+
+add_executable(HtmlTableHandler HtmlTableHandler.cpp HtmlTableHandler.h impl/HtmlTableHandlerImpl.cpp impl/HtmlTableHandlerImpl.h tests/test.cpp)

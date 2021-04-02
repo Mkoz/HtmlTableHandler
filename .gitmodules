@@ -1,3 +1,9 @@
 [submodule "CTML"]
 	path = CTML
 	url = https://github.com/tinfoilboy/CTML.git
+[submodule "gtest"]
+	path = gtest
+	url = https://github.com/google/googletest
+[submodule "tests/gtest"]
+	path = tests/gtest
+	url = https://github.com/google/googletest
