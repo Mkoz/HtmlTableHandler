@@ -76,30 +76,6 @@ TEST (Header, Set_ConsisntecyCheck_VariadicDiffTypes) {
 
 }
 
-TEST (Header, Set_ConsisntecyCheck_VariadicDiffNotSupportedTypes) {
-    unsigned short int test_h=29999;
-    unsigned short int test_w=27777;
-    HtmlTableHandlerImpl anImpl(test_h, test_w);
-
-    std::vector<std::string> str = {std::string("H5")};
-    auto& str_ref = str;
-    const char* char_str = "H3";
-    auto& char_str_ref = char_str;
-    anImpl.setHeader(std::string("H1"), "H2", char_str_ref, 4, str_ref);
-    EXPECT_EQ(anImpl.getHeader().Name() , HTH_DEFAULT_TABLE_NAME);
-    EXPECT_EQ(std::string("<HTH_Table><th>H1</th><th>H2</th><th>H3</th><th>4</th><th>H5</th></HTH_Table>"), anImpl.getHeader().ToString());
-
-    auto str_2 = std::string("H10");
-    auto& str_ref_2 = str_2;
-    const char* char_str_2 = "H9";
-    auto& char_str_ref_2 = char_str_2;
-    anImpl.setHeader("H6", std::string("H7"), 8, char_str_2, str_ref_2);
-    EXPECT_EQ(anImpl.getHeader().Name() , HTH_DEFAULT_TABLE_NAME);
-    EXPECT_EQ(std::string("<HTH_Table><th>H6</th><th>H7</th><th>8</th><th>H9</th><th>H10</th></HTH_Table>"), anImpl.getHeader().ToString());
-    //std::cout<<anImpl.getHeader().ToString()<<std::endl;
-
-}
-
 TEST (Header, Append_ConsisntecyCheck_InitilyzerList) {
     unsigned short int test_h=29999;
     unsigned short int test_w=27777;
