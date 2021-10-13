@@ -1,5 +1,4 @@
 #include "HtmlTableHandlerImpl.h"
-#include <iostream>
 
 HtmlTableHandlerImpl::HtmlTableHandlerImpl() : _size_w(0), _size_h(0){
     _doc = CTML::Document();
@@ -13,20 +12,27 @@ HtmlTableHandlerImpl::HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned
 
 HtmlTableHandlerImpl::~HtmlTableHandlerImpl(){}
 
+/*
 // Useless method wonna try variadic templates
-template<typename ...T>
-void HtmlTableHandlerImpl::setHeader(T&... anArgs) {
+template<class ...T>
+void HtmlTableHandlerImpl::setHeader(T... anArgs) {
     cleanNode(_header);
     // Capture args in a tuple
     // perfect forwarding allow to avoid copying
     std::cout<<"Remove me constructor 1"<<std::endl;
     auto&& t = std::forward_as_tuple(anArgs...);
+    std::istringstream theStream;
     for(unsigned short int i = 0; i < sizeof...(anArgs); ++i) {
         auto value = std::get<i>(t);
-        static_assert(std::is_same<decltype(value), std::string>::value, "arguments must be std::string");
-        _createHeader(value);
+        //static_assert(std::is_same<decltype(value), std::string>::value, "arguments must be std::string");
+        theStream << value << std::endl;
     }
-}
+    std::string tmpStr("");
+    while(std::getline(theStream, tmpStr)){
+        std::cout << "DEBUG:: " << tmpStr.c_str() << std::endl;
+        _createHeader(tmpStr.c_str());
+    }
+}*/
 
 void HtmlTableHandlerImpl::setHeader(std::initializer_list<char const*> anArgs) {
     cleanNode(_header);
