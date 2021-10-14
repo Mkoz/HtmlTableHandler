@@ -2,10 +2,10 @@
 #include "../CTML/include/ctml.hpp"
 #include <string>
 #include <tuple>
-#include <HTHConst.h>
-#include <list>
 #include <sstream>
 #include <iostream>
+
+#include <HTHConst.h>
 
 class HtmlTableHandlerImpl {
 
@@ -14,13 +14,15 @@ public:
     HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned short int a_size_w);
     ~HtmlTableHandlerImpl();
 
-    template<class ...T>void setHeader(T...);
+    template<class ...T>void setHeader(T... anArgs);
     void setHeader(std::initializer_list<const char*> anArgs);
-    void setHeader(std::list<const char*> anArgs);
-
-    template<typename ...T>void appendHeader(T&... anArgs);
+    template<typename ...T>void appendHeader(T... anArgs);
     void appendHeader(std::initializer_list<const char*> anArgs);
-    void appendHeader(std::list<const char*> anArgs);
+
+    template<class ...T>void setRow(T... anArgs);
+    void setRow(std::initializer_list<const char*> anArgs);
+    template<typename ...T>void appendRow(T... anArgs);
+    void appendRow(std::initializer_list<const char*> anArgs);
 
     template <typename anArg> void pushSell(anArg);
     template <typename anArg> void pushSell(anArg, unsigned short int a_size_h, unsigned short int a_size_w);
@@ -37,46 +39,40 @@ private:
     CTML::Document _doc;
     unsigned short int _size_h;
     unsigned short int _size_w;
-    void cleanNode(CTML::Node& aNode);
+    void __cleanNode(CTML::Node& aNode);
     template<typename T>
-    void _createHeader(T aValue);
+    void __createRow(std::string&& aTag,T aValue);
     template <typename... Args>
-    void handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t);
+    void __handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t);
 };
 
 
 template<class ...T>
 void HtmlTableHandlerImpl::setHeader(T... anArgs) {
-    cleanNode(_header);
+    __cleanNode(_header);
+    appendHeader(anArgs...);
+}
+
+template<typename ...T>
+void HtmlTableHandlerImpl::appendHeader(T... anArgs) {
     // Capture args in a tuple
     // perfect forwarding allow to avoid copying
-    std::cout<<"Remove me constructor 1"<<std::endl;
     auto&& t = std::forward_as_tuple(anArgs...);
     std::stringstream theStream;
-    /*for(std::size_t i = 0; i < sizeof...(anArgs); ++i) {
-        auto value = std::get<0>(t);
-        t = forward_as_tuple(tail(t));
-        //static_assert(std::is_same<decltype(value), std::string>::value, "arguments must be std::string");
-        theStream << value << std::endl;
-    }
-    for (const auto &arg : t ) {
-    //for (const auto &arg : std::tuple<anArgs...>)}
-        theStream << arg << std::endl;
-    }*/
 
     /*  does not work for gcc 10.2 should be fixed at 11.XX
     handle(theStream, t);
      */
-    handleTuple(theStream, t);
+    __handleTuple(theStream, t);
     std::string tmpStr("");
     while(std::getline(theStream, tmpStr)){
-        std::cout << "DEBUG:: " << tmpStr << std::endl;
-        _createHeader(tmpStr.c_str());
+        __createRow(std::move(std::string("th")), tmpStr.c_str());
     }
 }
 
+
 template <typename... Args>
-void HtmlTableHandlerImpl::handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t) {
+void HtmlTableHandlerImpl::__handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t) {
     std::apply([&](const auto &... args) {
         // All objects without implemented "<<" rise compile error
         ((aStream << args << std::endl), ...);
