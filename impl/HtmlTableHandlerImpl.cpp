@@ -2,7 +2,8 @@
 
 HtmlTableHandlerImpl::HtmlTableHandlerImpl() : _size_w(0), _size_h(0){
     _doc = CTML::Document();
-    _header = CTML::Node(HTH_DEFAULT_TABLE_NAME);
+    _header = CTML::Node(HTH_ROW_TAG);
+    _body = std::vector<CTML::Node>();
 }
 
 HtmlTableHandlerImpl::HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned short int a_size_w) : HtmlTableHandlerImpl() {
@@ -23,16 +24,13 @@ void HtmlTableHandlerImpl::appendHeader(std::initializer_list<char const*> anArg
     }
 }
 
-template<class T>
-void HtmlTableHandlerImpl::__createRow(std::string&& aTag,T aValue) {
-    CTML::Node aTh(aTag);
-    aTh.AppendText(aValue);
-    _header.AppendChild(aTh);
-}
-
 void HtmlTableHandlerImpl::__cleanNode(CTML::Node & aNode) {
     auto size = aNode.GetChildren().size();
     for (auto i = 0; i < size; i++) {
         aNode.RemoveChild(i);
     }
+}
+
+void HtmlTableHandlerImpl::__cleanNode(int& aNum) {
+    __cleanNode(getBody()[aNum]);
 }

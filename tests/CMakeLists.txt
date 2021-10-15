@@ -19,7 +19,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 # Unit Tests
 ################################
 # Add test cpp file
-add_executable( UnitTests test.cpp HtmlTableHandlerImplTests.cpp ${UnitTests_SOURCE_DIR}/../Impl/HtmlTableHandlerImpl.cpp ../Impl/HTHConst.h)
+add_executable( UnitTests test.cpp HtmlTableHandlerImplTests.cpp ${UnitTests_SOURCE_DIR}/../Impl/HtmlTableHandlerImpl.cpp ../Impl/HTHConst.h ../Impl/HtmlTableHandlerImpl.hpp)
 # Link test executable against gtest & gtest_main
 target_link_libraries(UnitTests gtest gtest_main)
 add_test( UnitTests ./UnitTests)
