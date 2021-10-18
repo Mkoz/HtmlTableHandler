@@ -3,7 +3,7 @@
 HtmlTableHandlerImpl::HtmlTableHandlerImpl() : _size_w(0), _size_h(0){
     _doc = CTML::Document();
     _header = CTML::Node(HTH_ROW_TAG);
-    _body = std::vector<CTML::Node>();
+    _body = std::vector<CTML::Node*>();
 }
 
 HtmlTableHandlerImpl::HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned short int a_size_w) : HtmlTableHandlerImpl() {
@@ -11,7 +11,11 @@ HtmlTableHandlerImpl::HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned
     _size_h = a_size_h;
 }
 
-HtmlTableHandlerImpl::~HtmlTableHandlerImpl(){}
+HtmlTableHandlerImpl::~HtmlTableHandlerImpl(){
+    for ( auto obj : _body ) {
+        delete obj;
+    }
+}
 
 void HtmlTableHandlerImpl::setHeader(std::initializer_list<char const*> anArgs) {
     __cleanNode(_header);
@@ -20,7 +24,7 @@ void HtmlTableHandlerImpl::setHeader(std::initializer_list<char const*> anArgs) 
 
 void HtmlTableHandlerImpl::appendHeader(std::initializer_list<char const*> anArgs) {
     for( auto arg : anArgs) {
-        __createRow(std::move(std::string("th")),arg);
+        __createCell(_header, std::move(std::string("th")),arg);
     }
 }
 
@@ -32,5 +36,5 @@ void HtmlTableHandlerImpl::__cleanNode(CTML::Node & aNode) {
 }
 
 void HtmlTableHandlerImpl::__cleanNode(int& aNum) {
-    __cleanNode(getBody()[aNum]);
+    __cleanNode(*(getBody()[aNum]));
 }

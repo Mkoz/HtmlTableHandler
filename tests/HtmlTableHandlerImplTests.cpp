@@ -154,3 +154,23 @@ TEST (Header, Append_FillTheHeaderOutOfRange) {
     verifyString += std::string("</tr>");
     EXPECT_EQ(verifyString, anImpl.getHeader().ToString());
 }
+
+TEST (Row, Set_ConsictencyCheck) {
+    unsigned short int test_h=29999;
+    unsigned short int test_w=100;
+    HtmlTableHandlerImpl anImpl(test_h, test_w);
+    pretests(anImpl, test_h, test_w);
+
+    auto verifyString = std::string("<tr>");
+    auto tmpValue = std::string("<tr>");
+    for (unsigned short int i = 0; i < test_w; ++i) {
+
+        auto str = std::string("H5");
+        auto& str_ref = str;
+        const char* char_str = "H3";
+        auto& char_str_ref = char_str;
+        anImpl.setRow(i, std::string("H1"), "H2", char_str_ref, 4, str_ref);
+
+        EXPECT_EQ(std::string("<tr><td>H1</td><td>H2</td><td>H3</td><td>4</td><td>H5</td></tr>"), anImpl.getBody()[i]->ToString());
+    }
+}

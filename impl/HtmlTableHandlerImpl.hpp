@@ -13,7 +13,7 @@ void HtmlTableHandlerImpl::appendRow(int aRowNumber, T... anArgs) {
     __handleTuple(theStream, t);
     std::string tmpStr("");
     while (std::getline(theStream, tmpStr)) {
-        __createRow(HTH_CELL_TAG, tmpStr);
+        __createCell(_header, HTH_CELL_TAG, tmpStr);
     }
 }
 
@@ -36,7 +36,7 @@ void HtmlTableHandlerImpl::appendHeader(T... anArgs) {
     __handleTuple(theStream, t);
     std::string tmpStr("");
     while (std::getline(theStream, tmpStr)) {
-        __createRow(HTH_HEADER_CELL_TAG, tmpStr);
+        __createCell(_header, HTH_HEADER_CELL_TAG, tmpStr);
     }
 }
 //throw std::overflow_error(std::to_string(aRowNumber) + " is too");
@@ -47,13 +47,28 @@ void HtmlTableHandlerImpl::setRow(int aRowNumber, T... anArgs) {
     // perfect forwarding allow to avoid copying
     auto &&t = std::forward_as_tuple(anArgs...);
     std::stringstream theStream;
+    auto tmpStr = std::string("");
+    int& index = aRowNumber;
+
+    // Don't want to raise error in case out of size rowNumber, but just append to the end
+    if ( aRowNumber >= _body.size() ) {
+        index = _body.size();
+        //Create instance of row
+        _body.push_back(new CTML::Node(HTH_ROW_TAG));
+    } else {
+        __cleanNode(*(_body[index]));
+    }
+
+    // Create link to avoid *ptr actions
+    auto& theNode = *(_body[index]);
 
     __handleTuple(theStream, t);
-    std::string tmpStr("");
+
     while (std::getline(theStream, tmpStr)) {
-        __createRow(HTH_HEADER_CELL_TAG, tmpStr);
+        __createCell(theNode, HTH_CELL_TAG, tmpStr);
     }
-    getBody()[std::max(static_cast<size_t>(aRowNumber), getBody().size())] = std::move(tmpStr);
+
+    //*(getBody()[index]) = std::move(tmpStr);
 
 }
 
@@ -67,13 +82,14 @@ void HtmlTableHandlerImpl::__handleTuple(std::stringstream &aStream, const std::
 }
 
 template <class T>
-void HtmlTableHandlerImpl::__createRow(const std::string& aTag,T& aValue) {
+void HtmlTableHandlerImpl::__createCell(CTML::Node& aNode, const std::string& aTag,T& aValue) {
     CTML::Node aTh(aTag);
     std::stringstream tmpStream;
     tmpStream << aValue;
     aTh.AppendText(tmpStream.str());
-    _header.AppendChild(aTh);
+    aNode.AppendChild(aTh);
 }
+
 /*  does not work for gcc 10.2 should be fixed at 11.XX
 template <size_t Size, typename... Args>
 struct tupleHelper  {
