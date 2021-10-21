@@ -1,22 +1,5 @@
 #pragma once
 
-template<typename ...T>
-void HtmlTableHandlerImpl::appendRow(int aRowNumber, T... anArgs) {
-    // Capture args in a tuple
-    // perfect forwarding allow to avoid copying
-    auto &&t = std::forward_as_tuple(anArgs...);
-    std::stringstream theStream;
-
-    /*  does not work for gcc 10.2 should be fixed at 11.XX
-    handle(theStream, t);
-    */
-    __handleTuple(theStream, t);
-    std::string tmpStr("");
-    while (std::getline(theStream, tmpStr)) {
-        __createCell(_header, HTH_CELL_TAG, tmpStr);
-    }
-}
-
 template<class ...T>
 void HtmlTableHandlerImpl::setHeader(T... anArgs) {
     __cleanNode(_header);
@@ -28,12 +11,13 @@ void HtmlTableHandlerImpl::appendHeader(T... anArgs) {
     // Capture args in a tuple
     // perfect forwarding allow to avoid copying
     auto &&t = std::forward_as_tuple(anArgs...);
-    std::stringstream theStream;
+    auto theStream = std::stringstream();
 
     /*  does not work for gcc 10.2 should be fixed at 11.XX
     handle(theStream, t);
     */
     __handleTuple(theStream, t);
+
     std::string tmpStr("");
     while (std::getline(theStream, tmpStr)) {
         __createCell(_header, HTH_HEADER_CELL_TAG, tmpStr);
@@ -45,9 +29,17 @@ template<class ...T>
 void HtmlTableHandlerImpl::setRow(int aRowNumber, T... anArgs) {
     // Capture args in a tuple
     // perfect forwarding allow to avoid copying
+    __cleanNode(*(_body[aRowNumber]));
+    appendRow(aRowNumber, anArgs...);
+    //*(getBody()[index]) = std::move(tmpStr);
+
+}
+
+template<class ...T>
+void HtmlTableHandlerImpl::appendRow(int aRowNumber, T... anArgs) {
     auto &&t = std::forward_as_tuple(anArgs...);
-    std::stringstream theStream;
     auto tmpStr = std::string("");
+    auto theStream = std::stringstream();
     int& index = aRowNumber;
 
     // Don't want to raise error in case out of size rowNumber, but just append to the end
@@ -67,9 +59,17 @@ void HtmlTableHandlerImpl::setRow(int aRowNumber, T... anArgs) {
     while (std::getline(theStream, tmpStr)) {
         __createCell(theNode, HTH_CELL_TAG, tmpStr);
     }
+}
+template <class T1, class T2>
+void HtmlTableHandlerImpl::__appendRow(T1& aTag, T2& aRow) {
+    _body.push_back(new CTML::Node(HTH_ROW_TAG));
+    __fillMaxLength(_body.back());
+    //_body.end()->
+}
 
-    //*(getBody()[index]) = std::move(tmpStr);
-
+template <class T>
+void HtmlTableHandlerImpl::__appendRow(T& aRow) {
+    appendRow(HTH_ROW_TAG, aRow);
 }
 
 
@@ -84,10 +84,13 @@ void HtmlTableHandlerImpl::__handleTuple(std::stringstream &aStream, const std::
 template <class T>
 void HtmlTableHandlerImpl::__createCell(CTML::Node& aNode, const std::string& aTag,T& aValue) {
     CTML::Node aTh(aTag);
-    std::stringstream tmpStream;
-    tmpStream << aValue;
-    aTh.AppendText(tmpStream.str());
+    auto theStream = std::stringstream();
+
+    theStream << aValue;
+
+    aTh.AppendText(theStream.str());
     aNode.AppendChild(aTh);
+    __fillMaxLength(&aNode);
 }
 
 /*  does not work for gcc 10.2 should be fixed at 11.XX

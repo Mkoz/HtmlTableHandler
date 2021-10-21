@@ -1,14 +1,10 @@
 #include "HtmlTableHandlerImpl.h"
 
-HtmlTableHandlerImpl::HtmlTableHandlerImpl() : _size_w(0), _size_h(0){
+HtmlTableHandlerImpl::HtmlTableHandlerImpl() {
     _doc = CTML::Document();
     _header = CTML::Node(HTH_ROW_TAG);
     _body = std::vector<CTML::Node*>();
-}
-
-HtmlTableHandlerImpl::HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned short int a_size_w) : HtmlTableHandlerImpl() {
-    _size_w = a_size_w;
-    _size_h = a_size_h;
+    _maxLength = 0;
 }
 
 HtmlTableHandlerImpl::~HtmlTableHandlerImpl(){
@@ -28,7 +24,12 @@ void HtmlTableHandlerImpl::appendHeader(std::initializer_list<char const*> anArg
     }
 }
 
-void HtmlTableHandlerImpl::__cleanNode(CTML::Node & aNode) {
+void HtmlTableHandlerImpl::setRow(int aRowNumber, std::initializer_list<char const*> anArgs) {
+    __cleanNode(_header);
+    appendRow(aRowNumber, anArgs);
+}
+
+void HtmlTableHandlerImpl::__cleanNode(CTML::Node& aNode) {
     auto size = aNode.GetChildren().size();
     for (auto i = 0; i < size; i++) {
         aNode.RemoveChild(i);
@@ -37,4 +38,8 @@ void HtmlTableHandlerImpl::__cleanNode(CTML::Node & aNode) {
 
 void HtmlTableHandlerImpl::__cleanNode(int& aNum) {
     __cleanNode(*(getBody()[aNum]));
+}
+
+void HtmlTableHandlerImpl::__fillMaxLength(CTML::Node* aValue) {
+    _maxLength = std::max(aValue->GetChildren().size(), _maxLength);
 }

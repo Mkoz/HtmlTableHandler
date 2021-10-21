@@ -13,7 +13,6 @@ class HtmlTableHandlerImpl {
 
 public:
     HtmlTableHandlerImpl();
-    HtmlTableHandlerImpl(unsigned short int a_size_h, unsigned short int a_size_w);
     ~HtmlTableHandlerImpl();
 
     template<class ...T>void setHeader(T... anArgs);
@@ -23,9 +22,10 @@ public:
 
     template<class ...T>void setRow(int aRowNumber, T... anArgs);
     void setRow(int aRowNumber, std::initializer_list<const char*> anArgs);
-    template<typename ...T>void appendRow(int aRowNumber, T... anArgs);
+
+    template<class ...T>void appendRow(int aRowNumber, T... anArgs);
     void appendRow(int aRowNumber, std::initializer_list<const char*> anArgs);
-    template<typename ...T>void appendToRow(int aRowNumber, T... anArgs);
+    template<class ...T>void appendToRow(int aRowNumber, T... anArgs);
     void appendToRow(int aRowNumber, std::initializer_list<const char*> anArgs);
 
     template <typename anArg> void pushSell(anArg);
@@ -36,20 +36,30 @@ public:
 public: //inline
     inline CTML::Node getHeader() { return _header;};
     inline std::vector<CTML::Node*>& getBody() { return _body;};
-    inline std::tuple <unsigned short int, unsigned short int> getSize() { return std::tuple<unsigned short int, unsigned short int>(this->_size_h, this->_size_w);};
+    inline std::pair<unsigned short int, unsigned short int> getSize() {
+        return std::pair<size_t, size_t>(this->_body.size() + 1, this->_maxLength);
+    };
+
 private:
     CTML::Node _header;
     std::vector<CTML::Node*> _body;
     CTML::Document _doc;
     unsigned short int _size_h;
     unsigned short int _size_w;
+    size_t _maxLength;
+
     void __cleanNode(CTML::Node& aNode);
     void __cleanNode(int& aNum);
+    void __fillMaxLength(CTML::Node* aValue);
 
     template <class T>
     void __createCell(CTML::Node& aNode, const std::string& aTag,T& aValue);
     template <typename... Args>
     void __handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t);
+    template <class T1, class T2>
+    void __appendRow(T1& aTag, T2& aRow);
+    template <class T>
+    void __appendRow(T& aRow);
 };
 
 #include <HtmlTableHandlerImpl.hpp>
