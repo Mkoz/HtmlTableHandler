@@ -7,3 +7,6 @@ static const std::string HTH_CELL_TAG = "td";
 
 #define PRINT std::cout << __FILE__ << ":" << __LINE__ << "->[" << __FUNCTION__ << "]::"
 #define PRINT_ERROR std::cout << "ERROR###"<< __FILE__ << ":" << __LINE__ << "->[" << __FUNCTION__ << "]::"
+
+#define _header _table[0]
+#define _body _table[1]

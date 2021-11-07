@@ -2,6 +2,9 @@
 #include "../Impl/HtmlTableHandlerImpl.h"
 #include "../Impl/HTHConst.h"
 
+// TODO 3 -> 100
+static int test_value = 3;
+
 void size_test(HtmlTableHandlerImpl& anImpl,const size_t& aH, const size_t& aW) {
     EXPECT_EQ(std::get<0>(anImpl.getSize()), aH);
     EXPECT_EQ(std::get<1>(anImpl.getSize()), aW);
@@ -12,6 +15,80 @@ TEST (DefaultConstructor, ConsisntecyCheck) {
     auto anImpl = HtmlTableHandlerImpl();
     size_test(anImpl, 1, 0);
 }
+
+TEST (RemoveRow, Remove_existed) {
+    auto anImpl = HtmlTableHandlerImpl();
+// TODO 2 -> 20
+    int thisTestTmpValue = 2;
+    size_test(anImpl, 1, 0);
+
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.addRow("Cell_1", "Cell_2");
+    }
+    size_test(anImpl, test_value + 1, 2);
+
+    for (auto i = 0; i < thisTestTmpValue; ++i) {
+        anImpl.removeRow(0);
+        size_test(anImpl, test_value - i, 2);
+    }
+    size_test(anImpl, test_value + 1 - thisTestTmpValue, 2);
+}
+
+TEST (RemoveRow, Remove_non_existed) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.addRow("Cell_1", "Cell_2");
+    }
+    size_test(anImpl, test_value + 1, 2);
+
+    anImpl.removeRow(test_value + 1);
+    size_test(anImpl, test_value + 1, 2);
+}
+
+TEST (RemoveRow, Remove_all) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.addRow("Cell_1", "Cell_2");
+        size_test(anImpl, i + 2 , 2);
+    }
+    size_test(anImpl, test_value + 1, 2);
+
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.removeRow(0);
+        size_test(anImpl, test_value - i, 2);
+    }
+    // TODO 2 -> 0
+    size_test(anImpl, 1, 2);
+
+}
+
+
+TEST (RemoveRow, Remove_all_reverse) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.addRow("Cell_1", "Cell_2");
+        size_test(anImpl, i + 2 , 2);
+    }
+    size_test(anImpl, test_value + 1, 2);
+
+    for (auto i = 100; i >= 0; --i) {
+        PRINT << "size - 1:: " << std::get<0>(anImpl.getSize()) << std::endl;
+        PRINT << i << std::endl;
+        anImpl.removeRow(i);
+        size_test(anImpl, i, 2);
+    }
+    // TODO 2 -> 0
+    size_test(anImpl, 1, 2);
+}
+TEST (RemoveRow, Remove_empty) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+}
+/*
 
 TEST (Header, Set_ConsisntecyCheck_InitilyzerList) {
     auto anImpl = HtmlTableHandlerImpl();
@@ -134,8 +211,32 @@ TEST (Row, Set_ConsictencyCheck) {
         const char* char_str = "H3";
         auto& char_str_ref = char_str;
         anImpl.setRow(i, std::string("H1"), "H2", char_str_ref, 4, str_ref);
-
         EXPECT_EQ(std::string("<tr><td>H1</td><td>H2</td><td>H3</td><td>4</td><td>H5</td></tr>"), anImpl.getBody()[i]->ToString());
     }
     size_test(anImpl, test_w + 1, 5);
 }
+
+TEST (Row, Set_ListConsictencyCheck) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+
+    auto verifyString = std::string("<tr>");
+    auto tmpValue = std::string("<tr>");
+    const size_t test_w = 100;
+
+    for (unsigned short int i = 0; i < test_w; ++i) {
+
+        auto aList = {"H1", "H2", "H3", "H4", "H5"};
+//PRINT << i << std::endl;
+        anImpl.setRow(i, aList);
+    }
+    PRINT << std::get<0>(anImpl.getSize()) << std::endl;
+    PRINT << std::get<1>(anImpl.getSize()) << std::endl;
+    PRINT << "Body:: " << anImpl.getBody().size()  << std::endl;
+
+    size_test(anImpl, test_w + 1, 5);
+    for (unsigned short int i = 0; i < test_w; ++i) {
+        EXPECT_EQ(std::string("<tr><th>H1</th><th>H2</th><th>H3</th><th>H4</th><th>H5</th></tr>"), anImpl.getBody()[i]->ToString());
+    }
+}
+ */

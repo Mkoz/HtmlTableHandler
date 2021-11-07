@@ -15,13 +15,63 @@ public:
     HtmlTableHandlerImpl();
     ~HtmlTableHandlerImpl();
 
+
+    template<class ...T>
+    void setHeader(T... anArg);
+    template<class ...T>
+    void appendHeader(T... anArg);
+    template<class ...T>
+    void setRow(size_t& aRowNumber, T... anArg);
+    template<class ...T>
+    void appendRow(size_t& aNode, T... anArg);
+    template<class ...T>
+    void addRow( T... anArg);
+    void removeRow(size_t aRowNum);
+
+public: //inline
+    inline CTML::Node& getHeader() { return _table[0];};
+    //inline std::vector<CTML::Node>& getBody() { return _body;};
+    inline std::pair<unsigned short int, unsigned short int> getSize() {
+        return std::pair<size_t, size_t>(this->_table.size(), this->_maxLength);
+    };
+
+private:
+    // Vector contains rows
+    std::vector<CTML::Node> _table;
+    CTML::Document _doc;
+
+    size_t _maxLength;
+
+    template <class T>
+    CTML::Node __createCell(const std::string& aTag,T& aValue);
+    template <typename... Args>
+    void __handleTuple(std::stringstream& aStream, const std::tuple<Args...> &t);
+    template <class T>
+    void __appendCell(CTML::Node& aRow, const std::string& aTag, T& aValue);
+    void __fillMaxLength(CTML::Node& aNode);
+    void __cleanNode(CTML::Node& aNode);
+    void __cleanNode(const size_t& aNum);
+    template <class... Args>
+    void __appendRow(CTML::Node& aNode, const std::string& aCellTag, Args... anArgs);
+    void __removeRow(size_t&& aRowNum);
+};
+
+#include <HtmlTableHandlerImpl.hpp>
+
+/*
+class HtmlTableHandlerImpl {
+
+public:
+    HtmlTableHandlerImpl();
+    ~HtmlTableHandlerImpl();
+
     template<class ...T>void setHeader(T... anArgs);
     void setHeader(std::initializer_list<const char*> anArgs);
     template<typename ...T>void appendHeader(T... anArgs);
     void appendHeader(std::initializer_list<const char*> anArgs);
 
-    template<class ...T>void setRow(int aRowNumber, T... anArgs);
-    void setRow(int aRowNumber, std::initializer_list<const char*> anArgs);
+    template<class ...T>void setRow(size_t aRowNumber, T... anArgs);
+    void setRow(size_t aRowNumber, std::initializer_list<const char*> anArgs);
 
     template<class ...T>void appendRow(int aRowNumber, T... anArgs);
     void appendRow(int aRowNumber, std::initializer_list<const char*> anArgs);
@@ -49,9 +99,11 @@ private:
     size_t _maxLength;
 
     void __cleanNode(CTML::Node& aNode);
-    void __cleanNode(int& aNum);
+    void __cleanNode(size_t& aNum);
     void __fillMaxLength(CTML::Node* aValue);
-
+    size_t __getMaxIndex(size_t& aNum);
+    template <class... T>
+    void __createRow(CTML::Node& aNode, const std::string& aTag, T... anArgs);
     template <class T>
     void __createCell(CTML::Node& aNode, const std::string& aTag,T& aValue);
     template <typename... Args>
@@ -62,4 +114,4 @@ private:
     void __appendRow(T& aRow);
 };
 
-#include <HtmlTableHandlerImpl.hpp>
+ */
