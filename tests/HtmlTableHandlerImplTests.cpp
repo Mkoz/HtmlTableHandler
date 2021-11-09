@@ -43,7 +43,7 @@ TEST (RemoveRow, Remove_non_existed) {
     }
     size_test(anImpl, test_value + 1, 2);
 
-    anImpl.removeRow(test_value + 1);
+    anImpl.removeRow(test_value + 10);
     size_test(anImpl, test_value + 1, 2);
 }
 
@@ -58,10 +58,13 @@ TEST (RemoveRow, Remove_all) {
 
     for (auto i = 0; i < test_value; ++i) {
         anImpl.removeRow(0);
-        size_test(anImpl, test_value - i, 2);
+        if (i == test_value - 1) {
+            size_test(anImpl, test_value - i, 0);
+        } else {
+            size_test(anImpl, test_value - i, 2);
+        }
     }
-    // TODO 2 -> 0
-    size_test(anImpl, 1, 2);
+    size_test(anImpl, 1, 0);
 
 }
 
@@ -75,14 +78,15 @@ TEST (RemoveRow, Remove_all_reverse) {
     }
     size_test(anImpl, test_value + 1, 2);
 
-    for (auto i = 100; i >= 0; --i) {
-        PRINT << "size - 1:: " << std::get<0>(anImpl.getSize()) << std::endl;
-        PRINT << i << std::endl;
-        anImpl.removeRow(i);
-        size_test(anImpl, i, 2);
+    for (auto i = test_value; i > 0; --i) {
+        anImpl.removeRow(i - 1);
+        if (i == 1) {
+            size_test(anImpl, i, 0);
+        } else {
+            size_test(anImpl, i, 2);
+        }
     }
-    // TODO 2 -> 0
-    size_test(anImpl, 1, 2);
+    size_test(anImpl, 1, 0);
 }
 TEST (RemoveRow, Remove_empty) {
     auto anImpl = HtmlTableHandlerImpl();
