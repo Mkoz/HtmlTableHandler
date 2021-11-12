@@ -184,6 +184,17 @@ void HtmlTableHandlerImpl::addRow( T... anArgs) {
 }
 
 template<class ...T>
+void HtmlTableHandlerImpl::insertRow(size_t aRowNumber, T... anArgs) {
+
+    if (_table.size() - 2 >= aRowNumber) {
+        _table.insert(_table.begin() + 1 + aRowNumber, CTML::Node(HTH_ROW_TAG));
+        __appendRow(*(_table.begin() + 1 + aRowNumber), HTH_CELL_TAG, anArgs...);
+    } else {
+        addRow(anArgs...);
+    }
+}
+
+template<class ...T>
 void HtmlTableHandlerImpl::appendRow(size_t& aRow, T... anArgs) {
     __appendRow(_table[aRow + 1], HTH_CELL_TAG, anArgs...);
 }

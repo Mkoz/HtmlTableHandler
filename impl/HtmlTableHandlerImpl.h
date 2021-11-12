@@ -26,10 +26,13 @@ public:
     void appendRow(size_t& aNode, T... anArg);
     template<class ...T>
     void addRow( T... anArg);
+    template<class ...T>
+    void insertRow(size_t aRowNumber, T... anArg);
     void removeRow(size_t aRowNum);
 
 public: //inline
     inline CTML::Node& getHeader() { return _table[0];};
+    inline CTML::Node& getRow(size_t aRow) { return _table[aRow + 1];};
     //inline std::vector<CTML::Node>& getBody() { return _body;};
     inline std::pair<unsigned short int, unsigned short int> getSize() {
         return std::pair<size_t, size_t>(this->_table.size(), this->_maxLength);
@@ -49,6 +52,7 @@ private:
     template <class T>
     void __appendCell(CTML::Node& aRow, const std::string& aTag, T& aValue);
     void __fillMaxLength(CTML::Node& aNode);
+    void __findMaxLength();
     void __cleanNode(CTML::Node& aNode);
     void __cleanNode(const size_t& aNum);
     template <class... Args>

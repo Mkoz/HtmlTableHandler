@@ -18,14 +18,24 @@ void HtmlTableHandlerImpl::removeRow(size_t aRowNum) {
 void HtmlTableHandlerImpl::__removeRow(size_t&& aRowNum) {
     if ( _table.size() > aRowNum ) {
         _table.erase(_table.begin() + aRowNum);
+        __findMaxLength();
     } else {
         PRINT_ERROR << "The table has only " << _table.size() - 1 << " rows, but requested to remove " << aRowNum << std::endl;
+        //exit(2);
     }
 }
 
-
 void HtmlTableHandlerImpl::__fillMaxLength(CTML::Node& aNode) {
     _maxLength = std::max(aNode.GetChildren().size(), _maxLength);
+}
+
+void HtmlTableHandlerImpl::__findMaxLength() {
+    _maxLength = 0;
+    for (auto iter = _table.begin(); iter != _table.end(); iter++) {
+        if ( iter->GetChildren().size() > _maxLength ) {
+            _maxLength = iter->GetChildren().size();
+        }
+    }
 }
 
 void HtmlTableHandlerImpl::__cleanNode(CTML::Node& aNode) {
