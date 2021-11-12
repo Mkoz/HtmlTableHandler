@@ -2,8 +2,7 @@
 #include "../Impl/HtmlTableHandlerImpl.h"
 #include "../Impl/HTHConst.h"
 
-// TODO 3 -> 100
-static int test_value = 10;
+static int test_value = 100;
 
 void size_test(HtmlTableHandlerImpl& anImpl,const size_t& aH, const size_t& aW) {
     EXPECT_EQ(std::get<0>(anImpl.getSize()), aH);
@@ -18,8 +17,7 @@ TEST (DefaultConstructor, ConsisntecyCheck) {
 
 TEST (RemoveRow, Remove_existed) {
     auto anImpl = HtmlTableHandlerImpl();
-// TODO 2 -> 20
-    int thisTestTmpValue = 2;
+    int thisTestTmpValue = test_value/5;
     size_test(anImpl, 1, 0);
 
     for (auto i = 0; i < test_value; ++i) {
@@ -94,8 +92,6 @@ TEST (RemoveRow, Remove_empty) {
     size_test(anImpl, 1, 0);
 }
 
-
-// TODO continue with insert
 TEST (InsertRow, Insert) {
     auto anImpl = HtmlTableHandlerImpl();
     size_test(anImpl, 1, 0);
@@ -144,6 +140,23 @@ TEST (InsertRow, Insert_at_the_end) {
         anImpl.insertRow(test_value + i, std::to_string(i));
         size_test(anImpl, test_value + i + 2, 1);
         EXPECT_EQ(std::string("<tr><td>" + std::to_string(i) + "</td></tr>"), anImpl.getRow(test_value + i).ToString());
+    }
+}
+
+TEST (AppendRow, Append) {
+    auto anImpl = HtmlTableHandlerImpl();
+    size_test(anImpl, 1, 0);
+
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.insertRow(0, std::to_string(i));
+        size_test(anImpl, i + 2, 1);
+        EXPECT_EQ(std::string("<tr><td>" + std::to_string(i) + "</td></tr>"), anImpl.getRow(0).ToString());
+    }
+
+    for (auto i = 0; i < test_value; ++i) {
+        anImpl.appendRow(i, "+" + std::to_string(i));
+        size_test(anImpl, test_value + 1, 2);
+        EXPECT_EQ(std::string("<tr><td>" + std::to_string(test_value - 1 - i) + "</td><td>+" + std::to_string(i) + "</td></tr>"), anImpl.getRow(i).ToString());
     }
 }
 /*
